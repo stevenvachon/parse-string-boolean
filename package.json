@@ -10,24 +10,23 @@
   },
   "devDependencies": {
     "babelify": "^8.0.0",
-    "babel-core": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "browserify": "^16.1.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "browserify": "^16.2.2",
     "chai": "^4.1.2",
-    "gzip-size-cli": "^2.1.0",
-    "mocha": "^5.0.1",
-    "nightmare": "^3.0.0",
-    "uglify-js": "^3.3.12",
-    "xvfb-maybe": "^0.2.1"
+    "gzip-size-cli": "^3.0.0",
+    "mocha": "^5.2.0",
+    "puppeteer": "^1.6.2",
+    "uglify-es": "^3.3.9"
   },
   "engines": {
     "node": ">= 6"
   },
   "scripts": {
-    "browserify": "browserify index.js --transform [ babelify --presets [ env ] ] --standalone parseBoolean | uglifyjs --compress --mangle -o browser.js",
+    "browserify": "browserify index.js --transform [ babelify --presets [ env ] ] --standalone=parseBoolean | uglifyjs --compress --mangle -o browser.js",
     "posttest": " gzip-size browser.js",
     "pretest": "npm run browserify --silent",
-    "test": "xvfb-maybe mocha test.js --check-leaks --bail"
+    "test": "mocha test.js --check-leaks --bail"
   },
   "files": [
     "browser.js",

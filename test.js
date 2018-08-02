@@ -1,14 +1,14 @@
 "use strict";
-const {after, before, beforeEach, describe, it} = require("mocha");
+const {after, before, describe, it} = require("mocha");
 const {expect} = require("chai");
-const Nightmare = require("nightmare");
 const parseBoolean = require("./");
+const puppeteer = require("puppeteer");
 
 
 
-describe("Node.js", function()
+describe("Node.js", () =>
 {
-	it("works", function()
+	it("works", () =>
 	{
 		expect( parseBoolean("true") ).to.be.true;
 		expect( parseBoolean("false") ).to.be.false;
@@ -36,7 +36,7 @@ describe("Node.js", function()
 
 
 
-	it("supports a default value", function()
+	it("supports a default value", () =>
 	{
 		expect( parseBoolean("0",123) ).to.equal(123);
 		expect( parseBoolean("1",123) ).to.equal(123);
@@ -51,7 +51,7 @@ describe("Node.js", function()
 
 
 
-	it("rejects non-string input", function()
+	it("rejects non-string input", () =>
 	{
 		const args = [1, true, {}, [], function(){}, null, undefined];
 
@@ -63,23 +63,35 @@ describe("Node.js", function()
 
 describe("Web browser", function()
 {
+	let browser, page;
+
+	const openBrowser = () =>
+	{
+		return puppeteer.launch({ args: ["--no-sandbox"] })
+		.then(puppeteerInstance =>
+		{
+			browser = puppeteerInstance;
+			return puppeteerInstance.newPage();
+		})
+		.then(pageInstance =>
+		{
+			page = pageInstance;
+			return page.addScriptTag({ path: "browser.js" });
+		});
+	};
+
+
+
 	this.timeout(5000);
 
-
-
-	let browser;
-
-	before(() => browser = new Nightmare({ nodeIntegration:false }).goto("about:blank"));
-
-	beforeEach(() => browser.refresh().then(() => browser.inject("js", "./browser.js")));
-
-	after(() => browser.end());
+	before(() => openBrowser());
+	after(() => browser.close());
 
 
 
-	it("works", function()
+	it("works", () =>
 	{
-		return browser.evaluate( function()
+		return page.evaluate(() =>
 		{
 			return [window.parseBoolean("true"), window.parseBoolean("false")];
 		})
